@@ -5,8 +5,8 @@ from DrissionPage import ChromiumOptions, ChromiumPage
 
 from utils import code_clear, code_input, login, pushplus
 
-path = r"/usr/bin/chromium-browser"  # 请改为你电脑内 Chrome 可执行文件路径
-# path = "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+# path = r"/usr/bin/chromium-browser"  # 请改为你电脑内 Chrome 可执行文件路径
+path = "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
 co = ChromiumOptions()
 co.set_browser_path(path)
 co.set_argument("--headless=new")
@@ -20,15 +20,14 @@ COUNT = os.environ["COUNT"]
 PWD = os.environ["PWD"]
 PUSH_PLUS_TOKEN = os.environ["PUSH_PLUS_TOKEN"]
 GITHUB_TRIGGERING_ACTOR = os.environ["GITHUB_TRIGGERING_ACTOR"]
-
+print(COUNT)
+print(PWD)
 # 账号输入
 count_input = driver.ele("@type=text")
-count_input.input("8212210728")
-
+count_input.input(COUNT)
 # 密码输入
 pwd_input = driver.ele("@type=password")
-pwd_input.input("121517")
-
+pwd_input.input(PWD)
 code_input(driver)
 login(driver)
 
