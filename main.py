@@ -24,11 +24,11 @@ print(COUNT)
 print(PWD)
 # 账号输入
 count_input = driver.ele("@type=text")
-count_input.input(COUNT)
+count_input.input("8212210728")
 
 # 密码输入
 pwd_input = driver.ele("@type=password")
-pwd_input.input(PWD)
+pwd_input.input("121517")
 
 code_input(driver)
 login(driver)
