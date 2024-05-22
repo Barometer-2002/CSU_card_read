@@ -5,8 +5,8 @@ from DrissionPage import ChromiumOptions, ChromiumPage
 
 from utils import code_clear, code_input, login, pushplus
 
-# path = r"/usr/bin/chromium-browser"  # 请改为你电脑内 Chrome 可执行文件路径
-path = "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+path = r"/usr/bin/chromium-browser"  # 请改为你电脑内 Chrome 可执行文件路径
+# path = "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
 co = ChromiumOptions()
 co.set_browser_path(path)
 co.set_argument("--headless=new")
