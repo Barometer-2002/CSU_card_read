@@ -20,7 +20,8 @@ COUNT = os.environ["COUNT"]
 PWD = os.environ["PWD"]
 PUSH_PLUS_TOKEN = os.environ["PUSH_PLUS_TOKEN"]
 GITHUB_TRIGGERING_ACTOR = os.environ["GITHUB_TRIGGERING_ACTOR"]
-
+print(COUNT)
+print(PWD)
 # 账号输入
 count_input = driver.ele("@type=text")
 count_input.input(COUNT)
