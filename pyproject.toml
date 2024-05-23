@@ -6,9 +6,9 @@ authors = ["dream同学0 <1399541701@qq.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.11,<3.12"
+python = ">=3.11,<3.13"
 drissionpage = "^4.0.4.13"
-ddddocr = "^1.4.11"
+ddddocr = "1.5.3"
 
 
 [build-system]

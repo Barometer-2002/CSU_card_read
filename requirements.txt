@@ -1,2 +1,2 @@
-ddddocr
-DrissionPage
+ddddocr==1.5.3
+DrissionPage==4.0.4.23
