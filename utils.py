@@ -1,48 +1,17 @@
 import datetime
 import json
-import logging
+import logging as log
 from configparser import ConfigParser
 from contextlib import suppress
 from pathlib import Path
 
-import ddddocr
 import requests
 
 date = datetime.date.today().strftime("%y-%m-%d")
 
 
-def code_recog(code: str):
-    ocr = ddddocr.DdddOcr()
-    with open(code, "rb") as f:
-        image = f.read()
-    catch = ocr.classification(image)
-    return catch
-
-
-def code_input(driver):
-    code_img = driver.ele(
-        "css:#pane-sno > div.el-form-item.captcha > div > div.el-image > img"
-    )
-    code_img.get_screenshot(name="code.png")
-
-    code_input = driver.ele(
-        "css:#pane-sno > div.el-form-item.captcha > div > div.el-input.el-input--suffix > input"
-    )
-    # 验证码扫描
-    catch = code_recog("code.png")
-    code_input.input(catch)
-
-
-def code_clear(driver):
-    code_input = driver.ele(
-        "css:#pane-sno > div.el-form-item.captcha > div > div.el-input.el-input--suffix > input"
-    )
-    code_input.clear()
-
-
-def login(driver):
-    login_button = driver.ele("@type=button")
-    login_button.click()
+def is_debug():
+    return log.root.level == log.DEBUG
 
 
 def add_data(cost):
@@ -51,10 +20,11 @@ def add_data(cost):
     with suppress(FileNotFoundError):
         with open("data.js", "r") as f:
             origindata = f.read().lstrip("data=")
+
     try:
         data: list = json.loads(origindata)
     except json.decoder.JSONDecodeError:
-        logging.error("json 格式错误，请检查")
+        log.error("json 格式错误，请检查")
         exit(1)
 
     if data and (date in data[-1].values()):
@@ -81,7 +51,7 @@ def pushplus(cost, COUNT, GITHUB_TRIGGERING_ACTOR, PUSH_PLUS_TOKEN):
         text = f"""# <text style="color:red;">警告：校卡余额低于阈值 ({last_remain}元)</text>\n"""
     else:
         if config.getboolean("pushplus", "push_warning_only", fallback=False):
-            logging.info("sufficient cost, ignoring pushing...")
+            log.info("sufficient cost, ignoring pushing...")
             # return
         text = ""
     index = 1
@@ -95,10 +65,10 @@ def pushplus(cost, COUNT, GITHUB_TRIGGERING_ACTOR, PUSH_PLUS_TOKEN):
     # ):
     #     website = f"https://{GITHUB_TRIGGERING_ACTOR}.github.io/CSU_statistics"
     #     text += f"[图表显示更多数据]({website})\n"
-    #     logging.info("show more details")
+    #     log.info("show more details")
     with suppress():
         sendMsgToWechat(PUSH_PLUS_TOKEN, f"{stime}CSU 校卡余额统计", text, "markdown")
-        logging.info("push plus executed successfully")
+        log.info("push plus executed successfully")
 
 
 def sendMsgToWechat(token: str, title: str, text: str, template: str) -> None:
