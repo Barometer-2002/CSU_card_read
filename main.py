@@ -91,8 +91,7 @@ for _ in range(3):
     time.sleep(2)
     login_button = driver.ele("@type=button")
     driver.get_screenshot(name="3.png")
-    if is_debug():
-        time.sleep(4)
+    time.sleep(2)
     login_button.click()
     error_message = driver.ele("gagargaagga")
     if not error_message:
