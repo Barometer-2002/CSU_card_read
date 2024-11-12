@@ -66,28 +66,30 @@ driver.get("https://ecard.csu.edu.cn/plat/login?synAccessSource=h5&loginFrom=h5&
 
 # 尝试登录
 for _ in range(3):
-    time.sleep(1)
+    time.sleep(2)
     morelogin_button = driver.ele("@type=flex")
     morelogin_button.click()
     time.sleep(5)
     cardlogin_button = driver.ele("@type=button", index=3)
     cardlogin_button.click()
-    time.sleep(1)
+    time.sleep(2)
     if is_debug():
         time.sleep(4)
     count_input = driver.ele("@type=text")
     count_input.clear()
     count_input.input(COUNT)
+    time.sleep(2)
     pwd_input = driver.ele("@type=password")
     pwd_input.clear()
     pwd_input.input(PWD)
+    time.sleep(1)
     code_input(driver)
+    time.sleep(2)
     login_button = driver.ele("@type=button")
     if is_debug():
         time.sleep(4)
     login_button.click()
-
-    error_message = driver.ele(".el-message__content")
+    error_message = driver.ele("@class=van-popup van-popup--top van-notify van-notify--danger")
     if not error_message:
         log.info("登录成功")
         break
@@ -97,24 +99,24 @@ else:
 # 获取数据
 time.sleep(5)
 driver.get_screenshot(name="login.png")
-# all_body = driver.ele("@src=https://ecard.csu.edu.cn/minio/theme/76a207a88839430103a509aa3882bde4/images/plat/white/appView/all.png")
-# all_body.click()
-# time.sleep(5)
-# last_body = driver.ele("@src=https://ecard.csu.edu.cn/minio/theme/76a207a88839430103a509aa3882bde4/images/plat/white/appView/electricity.png")
-# last_body.click()
-# time.sleep(5)
-# # 查找class=text-gary的第二个元素提取为文本
-# remain_class = driver.ele("@class=text-gary", index=2).text
-# print(remain_class)
-# # 从"剩余电量: 55.073"字符中保留数字部分
-# remain = remain_class.split(":")[-1].strip()
+all_body = driver.ele("@src=https://ecard.csu.edu.cn/minio/theme/76a207a88839430103a509aa3882bde4/images/plat/white/appView/all.png")
+all_body.click()
+time.sleep(5)
+last_body = driver.ele("@src=https://ecard.csu.edu.cn/minio/theme/76a207a88839430103a509aa3882bde4/images/plat/white/appView/electricity.png")
+last_body.click()
+time.sleep(5)
+# 查找class=text-gary的第二个元素提取为文本
+remain_class = driver.ele("@class=text-gary", index=2).text
+print(remain_class)
+# 从"剩余电量: 55.073"字符中保留数字部分
+remain = remain_class.split(":")[-1].strip()
 
-# try:
-#     cost = float(remain)
-# except ValueError:
-#     log.error(f"余额不是数字: {remain}")
-#     exit(1)
+try:
+    cost = float(remain)
+except ValueError:
+    log.error(f"余额不是数字: {remain}")
+    exit(1)
 
-# log.info(cost)
-# driver.quit()
-# pushplus(cost, COUNT, GITHUB_TRIGGERING_ACTOR, PUSH_PLUS_TOKEN)
+log.info(cost)
+driver.quit()
+pushplus(cost, COUNT, GITHUB_TRIGGERING_ACTOR, PUSH_PLUS_TOKEN)
