@@ -89,7 +89,7 @@ for _ in range(3):
     driver.get_screenshot(name="2.png")
     code_input(driver)
     time.sleep(2)
-    login_button = driver.ele("@type=button")
+    login_button = driver.ele("@type=button",index=-2)
     driver.get_screenshot(name="3.png")
     time.sleep(2)
     login_button.click()
