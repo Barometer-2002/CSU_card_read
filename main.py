@@ -58,7 +58,7 @@ co.set_browser_path(browser_path)
 # 添加微信浏览器的 User-Agent
 co.set_user_agent("Mozilla/5.0 (iPhone; CPU iPhone OS 12_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/16A366 MicroMessenger/7.0.5(0x17000521) NetType/WIFI Language/zh_CN")
 co.set_argument("--headless")
-# co.set_argument("--no-sandbox")
+co.set_argument("--no-sandbox")
 
 driver = ChromiumPage(co)
 driver.get("https://ecard.csu.edu.cn/plat/login?synAccessSource=h5&loginFrom=h5&type=login")
@@ -97,24 +97,24 @@ else:
 # 获取数据
 time.sleep(5)
 driver.get_screenshot(name="login.png")
-all_body = driver.ele("@src=https://ecard.csu.edu.cn/minio/theme/76a207a88839430103a509aa3882bde4/images/plat/white/appView/all.png")
-all_body.click()
-time.sleep(5)
-last_body = driver.ele("@src=https://ecard.csu.edu.cn/minio/theme/76a207a88839430103a509aa3882bde4/images/plat/white/appView/electricity.png")
-last_body.click()
-time.sleep(5)
-# 查找class=text-gary的第二个元素提取为文本
-remain_class = driver.ele("@class=text-gary", index=2).text
-print(remain_class)
-# 从"剩余电量: 55.073"字符中保留数字部分
-remain = remain_class.split(":")[-1].strip()
+# all_body = driver.ele("@src=https://ecard.csu.edu.cn/minio/theme/76a207a88839430103a509aa3882bde4/images/plat/white/appView/all.png")
+# all_body.click()
+# time.sleep(5)
+# last_body = driver.ele("@src=https://ecard.csu.edu.cn/minio/theme/76a207a88839430103a509aa3882bde4/images/plat/white/appView/electricity.png")
+# last_body.click()
+# time.sleep(5)
+# # 查找class=text-gary的第二个元素提取为文本
+# remain_class = driver.ele("@class=text-gary", index=2).text
+# print(remain_class)
+# # 从"剩余电量: 55.073"字符中保留数字部分
+# remain = remain_class.split(":")[-1].strip()
 
-try:
-    cost = float(remain)
-except ValueError:
-    log.error(f"余额不是数字: {remain}")
-    exit(1)
+# try:
+#     cost = float(remain)
+# except ValueError:
+#     log.error(f"余额不是数字: {remain}")
+#     exit(1)
 
-log.info(cost)
-driver.quit()
-pushplus(cost, COUNT, GITHUB_TRIGGERING_ACTOR, PUSH_PLUS_TOKEN)
+# log.info(cost)
+# driver.quit()
+# pushplus(cost, COUNT, GITHUB_TRIGGERING_ACTOR, PUSH_PLUS_TOKEN)
