@@ -1,14 +1,13 @@
 [tool.poetry]
-name = "csu-electric-rebuild-drissionpage"
+name = "csu-card-read"
 version = "0.1.0"
-description = ""
-authors = ["dream同学0 <1399541701@qq.com>"]
-readme = "README.md"
+description = "查询csu宿舍电费余额并推送"
+authors = ["barometer"]
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.13"
-drissionpage = "^4.0.4.13"
-ddddocr = "1.5.3"
+drissionpage = "^4.1.0.11"
+ddddocr = "1.5.6"
 
 
 [build-system]
