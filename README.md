@@ -1,6 +1,6 @@
-# CSU 校卡余额自动读取配置
+# CSU 电费余额自动读取配置
 
-中南大学电费统计，改编自华东理工的[电费余额查询项目](https://github.com/lxl66566/ecust-electricity-statistics)，配置方法如下。
+中南大学铁10舍电费统计，改编自华东理工的[电费余额查询项目](https://github.com/lxl66566/ecust-electricity-statistics)，配置方法如下。
 
 在操作下面步骤之前，请先注册 Github 账号。
 
@@ -26,7 +26,7 @@
 
 | 变量名（Name）  |        密码（Secret）         |
 | :-------------: | :---------------------------: |
-|      COUNT      |             学号              |
+|      COUNT      |          校园卡账号           |
 |       PWD       |         身份证后六位          |
 | PUSH_PLUS_TOKEN | 输入前面保存的 pushplus token |
 
