@@ -96,7 +96,7 @@ else:
 
 # 获取数据
 time.sleep(5)
-page.screenshot(path="screenshot.png")
+driver.screenshot("login.png")
 all_body = driver.ele("@src=https://ecard.csu.edu.cn/minio/theme/76a207a88839430103a509aa3882bde4/images/plat/white/appView/all.png")
 all_body.click()
 time.sleep(5)
