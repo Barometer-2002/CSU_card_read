@@ -1,5 +1,4 @@
 name: "Github Action Push Daily"
-
 on:
   workflow_dispatch:
   schedule:
@@ -15,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install chromium
-        run: sudo apt-get install chromium-browser
+        run: sudo apt-get update && sudo apt-get install -y chromium-browser
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
@@ -38,5 +37,5 @@ jobs:
           git diff
           git add -A
           git status
-          git commit -m "update by github actions"
+          git commit -m "update by github actions" || echo "No changes to commit"
           git push
