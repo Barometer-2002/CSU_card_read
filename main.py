@@ -24,13 +24,11 @@ def code_input(driver: ChromiumPage):
     :return: None
     :rtype: None
     """
-    code_input = driver.ele(
-        "css:#pane-sno > div.el-form-item.captcha > div > div.el-input.el-input--suffix > input"
-    )
+    code_input = driver.ele("@placeholder=请输入验证码")
     code_input.clear()
     code_src = driver.ele(
-        "css:#pane-sno > div.el-form-item.captcha > div > div.el-image > img"
-    ).attr("src")
+        locator=".van-image__img"
+        ).attr("src")
     assert code_src, "未找到验证码"
     code_src = code_src.removeprefix("data:image/png;base64,")
     log.debug(f"{code_src=}")
@@ -50,21 +48,33 @@ log.debug(f"{COUNT=}, {PWD=}, {PUSH_PLUS_TOKEN=}, {GITHUB_TRIGGERING_ACTOR=}")
 
 # browser init
 if platform.system() == "Windows":
-    browser_path = "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+    browser_path = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
 else:
     browser_path = r"/usr/bin/chromium-browser"
 assert os.path.exists(browser_path), "未找到 Chromium 浏览器"
 co = ChromiumOptions()
 co.set_browser_path(browser_path)
+
+# 添加微信浏览器的 User-Agent
+co.set_user_agent("Mozilla/5.0 (iPhone; CPU iPhone OS 12_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/16A366 MicroMessenger/7.0.5(0x17000521) NetType/WIFI Language/zh_CN")
+
 if not is_debug():
     co.set_argument("--headless")
 co.set_argument("--no-sandbox")
+
 driver = ChromiumPage(co)
-driver.get("https://ecard.csu.edu.cn/plat-pc/login")
+driver.get("https://ecard.csu.edu.cn/plat/login?synAccessSource=h5&loginFrom=h5&type=login")
+
 
 # 尝试登录
 for _ in range(3):
     time.sleep(1)
+    morelogin_button = driver.ele("@type=flex")
+    morelogin_button.click()
+    cardlogin_button = driver.ele("@type=button", index=3)
+    cardlogin_button.click()
+    if is_debug():
+        time.sleep(4)
     count_input = driver.ele("@type=text")
     count_input.clear()
     count_input.input(COUNT)
@@ -85,9 +95,16 @@ else:
     raise Exception("登录失败")
 
 # 获取数据
-card_body = driver.ele("css:#cardService > div > div:nth-child(1) > div > div > div")
-card_body.click()
-remain = driver.ele(".value font-size-18").text[1:]
+all_body = driver.ele("@src=https://ecard.csu.edu.cn/minio/theme/76a207a88839430103a509aa3882bde4/images/plat/white/appView/all.png")
+all_body.click()
+last_body = driver.ele("@src=https://ecard.csu.edu.cn/minio/theme/76a207a88839430103a509aa3882bde4/images/plat/white/appView/electricity.png")
+last_body.click()
+
+# 查找class=text-gary的第二个元素提取为文本
+remain_class = driver.ele("@class=text-gary", index=2).text
+print(remain_class)
+# 从"剩余电量: 55.073"字符中保留数字部分
+remain = remain_class.split(":")[-1].strip()
 
 try:
     cost = float(remain)
