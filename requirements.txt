@@ -1,2 +1,2 @@
-ddddocr==1.5.3
-DrissionPage==4.0.4.23
+ddddocr==1.5.6
+DrissionPage==4.1.0.11
