@@ -94,7 +94,7 @@ for _ in range(3):
     if is_debug():
         time.sleep(4)
     login_button.click()
-    error_message = driver.ele("@class=van-popup van-popup--top van-notify van-notify--danger")
+    error_message = driver.ele("")
     if not error_message:
         log.info("登录成功")
         driver.get_screenshot(name="4.png")
