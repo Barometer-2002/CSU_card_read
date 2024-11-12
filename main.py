@@ -97,13 +97,13 @@ else:
     raise Exception("登录失败")
 
 # 获取数据
-time.sleep(2)
+time.sleep(1)
 all_body = driver.ele("@src=https://ecard.csu.edu.cn/minio/theme/76a207a88839430103a509aa3882bde4/images/plat/white/appView/all.png")
 all_body.click()
-time.sleep(2)
+time.sleep(1)
 last_body = driver.ele("@src=https://ecard.csu.edu.cn/minio/theme/76a207a88839430103a509aa3882bde4/images/plat/white/appView/electricity.png")
 last_body.click()
-time.sleep(2)
+time.sleep(1)
 # 查找class=text-gary的第二个元素提取为文本
 remain_class = driver.ele("@class=text-gary", index=2).text
 print(remain_class)
