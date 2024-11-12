@@ -71,8 +71,10 @@ for _ in range(3):
     time.sleep(1)
     morelogin_button = driver.ele("@type=flex")
     morelogin_button.click()
+    time.sleep(1)
     cardlogin_button = driver.ele("@type=button", index=3)
     cardlogin_button.click()
+    time.sleep(1)
     if is_debug():
         time.sleep(4)
     count_input = driver.ele("@type=text")
