@@ -71,7 +71,7 @@ for _ in range(3):
     time.sleep(1)
     morelogin_button = driver.ele("@type=flex")
     morelogin_button.click()
-    time.sleep(1)
+    time.sleep(5)
     cardlogin_button = driver.ele("@type=button", index=3)
     cardlogin_button.click()
     time.sleep(1)
