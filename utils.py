@@ -40,7 +40,7 @@ def add_data(cost):
 def pushplus(cost, COUNT, GITHUB_TRIGGERING_ACTOR, PUSH_PLUS_TOKEN):
     config = ConfigParser()
     config.read("config.ini", encoding="utf-8")
-    tablehead = "|序号 | 时间 | 校卡余额|\n|:---:|:---:|:---:|\n"
+    tablehead = "|序号 | 时间 | 剩余电量|\n|:---:|:---:|:---:|\n"
     text = tablehead
     stime = date
     days_to_show = config.getint("pushplus", "days_to_show", fallback=10)
@@ -48,7 +48,7 @@ def pushplus(cost, COUNT, GITHUB_TRIGGERING_ACTOR, PUSH_PLUS_TOKEN):
     last_few_items = data[-days_to_show:]
     last_remain = last_few_items[-1]["val"]
     if config.getint("pushplus", "warning", fallback=10) > last_remain:
-        text = f"""# <text style="color:red;">警告：校卡余额低于阈值 ({last_remain}元)</text>\n"""
+        text = f"""# <text style="color:red;">警告：剩余电量低于阈值 ({last_remain}度)</text>\n"""
     else:
         if config.getboolean("pushplus", "push_warning_only", fallback=False):
             log.info("sufficient cost, ignoring pushing...")
@@ -56,9 +56,9 @@ def pushplus(cost, COUNT, GITHUB_TRIGGERING_ACTOR, PUSH_PLUS_TOKEN):
         text = ""
     index = 1
     for item in reversed(last_few_items):
-        tablehead += f'| {index} | {item["datetime"]} | {item["val"]}元 |\n'
+        tablehead += f'| {index} | {item["datetime"]} | {item["val"]}度 |\n'
         index += 1
-    text += f"## 当前余额：{cost}元\n个人信息：卡号{COUNT}\n\n统计时间：{stime}\n\n### 最近{days_to_show}天数据\n{tablehead}\n"
+    text += f"## 当前余额：{cost}度\n个人信息：卡号{COUNT}\n\n统计时间：{stime}\n\n### 最近{days_to_show}天数据\n{tablehead}\n"
     # if (
     #     config.getboolean("pushplus", "detail", fallback=True)
     #     and GITHUB_TRIGGERING_ACTOR
@@ -67,7 +67,7 @@ def pushplus(cost, COUNT, GITHUB_TRIGGERING_ACTOR, PUSH_PLUS_TOKEN):
     #     text += f"[图表显示更多数据]({website})\n"
     #     log.info("show more details")
     with suppress():
-        sendMsgToWechat(PUSH_PLUS_TOKEN, f"{stime}CSU 校卡余额统计", text, "markdown")
+        sendMsgToWechat(PUSH_PLUS_TOKEN, f"{stime}CSU 剩余电量统计", text, "markdown")
         log.info("push plus executed successfully")
 
 
