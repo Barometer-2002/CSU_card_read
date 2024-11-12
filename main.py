@@ -57,9 +57,7 @@ co.set_browser_path(browser_path)
 
 # 添加微信浏览器的 User-Agent
 co.set_user_agent("Mozilla/5.0 (iPhone; CPU iPhone OS 12_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/16A366 MicroMessenger/7.0.5(0x17000521) NetType/WIFI Language/zh_CN")
-
-if not is_debug():
-    co.set_argument("--headless")
+co.set_argument("--headless")
 co.set_argument("--no-sandbox")
 
 driver = ChromiumPage(co)
