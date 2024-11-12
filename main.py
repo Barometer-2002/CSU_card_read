@@ -62,6 +62,7 @@ co.set_argument("--no-sandbox")
 
 driver = ChromiumPage(co)
 driver.get("https://ecard.csu.edu.cn/plat/login?synAccessSource=h5&loginFrom=h5&type=login")
+driver.get_screenshot(name="1.png")
 
 
 # 尝试登录
@@ -83,40 +84,43 @@ for _ in range(3):
     pwd_input.clear()
     pwd_input.input(PWD)
     time.sleep(1)
+    driver.get_screenshot(name="2.png")
     code_input(driver)
     time.sleep(2)
     login_button = driver.ele("@type=button")
+    driver.get_screenshot(name="3.png")
     if is_debug():
         time.sleep(4)
     login_button.click()
     error_message = driver.ele("@class=van-popup van-popup--top van-notify van-notify--danger")
     if not error_message:
         log.info("登录成功")
+        driver.get_screenshot(name="4.png")
         break
 else:
     raise Exception("登录失败")
 
-# 获取数据
-time.sleep(5)
-driver.get_screenshot(name="login.png")
-all_body = driver.ele("@src=https://ecard.csu.edu.cn/minio/theme/76a207a88839430103a509aa3882bde4/images/plat/white/appView/all.png")
-all_body.click()
-time.sleep(5)
-last_body = driver.ele("@src=https://ecard.csu.edu.cn/minio/theme/76a207a88839430103a509aa3882bde4/images/plat/white/appView/electricity.png")
-last_body.click()
-time.sleep(5)
-# 查找class=text-gary的第二个元素提取为文本
-remain_class = driver.ele("@class=text-gary", index=2).text
-print(remain_class)
-# 从"剩余电量: 55.073"字符中保留数字部分
-remain = remain_class.split(":")[-1].strip()
+# # 获取数据
+# time.sleep(5)
+# driver.get_screenshot(name="login.png")
+# all_body = driver.ele("@src=https://ecard.csu.edu.cn/minio/theme/76a207a88839430103a509aa3882bde4/images/plat/white/appView/all.png")
+# all_body.click()
+# time.sleep(5)
+# last_body = driver.ele("@src=https://ecard.csu.edu.cn/minio/theme/76a207a88839430103a509aa3882bde4/images/plat/white/appView/electricity.png")
+# last_body.click()
+# time.sleep(5)
+# # 查找class=text-gary的第二个元素提取为文本
+# remain_class = driver.ele("@class=text-gary", index=2).text
+# print(remain_class)
+# # 从"剩余电量: 55.073"字符中保留数字部分
+# remain = remain_class.split(":")[-1].strip()
 
-try:
-    cost = float(remain)
-except ValueError:
-    log.error(f"余额不是数字: {remain}")
-    exit(1)
+# try:
+#     cost = float(remain)
+# except ValueError:
+#     log.error(f"余额不是数字: {remain}")
+#     exit(1)
 
-log.info(cost)
-driver.quit()
-pushplus(cost, COUNT, GITHUB_TRIGGERING_ACTOR, PUSH_PLUS_TOKEN)
+# log.info(cost)
+# driver.quit()
+# pushplus(cost, COUNT, GITHUB_TRIGGERING_ACTOR, PUSH_PLUS_TOKEN)
