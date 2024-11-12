@@ -15,6 +15,16 @@ jobs:
       - uses: actions/checkout@v3
       - name: Install chromium
         run: sudo apt-get update && sudo apt-get install -y chromium-browser
+      - name: Install Dependencies for Headless Browser
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgbm-dev libxshmfence-dev \
+                                  libasound2 libatk1.0-0 libatk-bridge2.0-0 \
+                                  libcups2 libdrm2 libxrandr2 \
+                                  libgbm1 libnss3 libxss1 libxcomposite1 \
+                                  libxcursor1 libxdamage1 libxfixes3 \
+                                  libxinerama1 libxrender1 libxi6 libgl1 \
+                                  libpango1.0-0 libgtk-3-0
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
