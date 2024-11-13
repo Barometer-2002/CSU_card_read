@@ -32,11 +32,12 @@ def run(playwright: Playwright) -> None:
     # 输入验证码
     page.get_by_placeholder("请输入验证码").fill(code)
     page.get_by_role("button", name="登录").click()
+    time.sleep(5)
     page.locator("div:nth-child(7) > .van-grid-item__content > .van-grid-item__icon-wrapper > .grid-icon-box > .s-icon > .van-image__img").click()
-    time.sleep(1)
+    time.sleep(5)
     page.locator("div").filter(has_text=re.compile(r"^代充值图书馆缴费校园卡资金转银行宿舍缴电费校本部和铁道10\.11舍宿舍缴费$")).get_by_role("img").nth(4).click()
     # 获取余额文本
-    time.sleep(1)
+    time.sleep(5)
     balance = page.locator('p.text-gary:has-text("剩余电量") span:nth-child(2)').inner_text()
     # 从字符中保留数据部分
     remain = balance.split(":")[-1].strip()
