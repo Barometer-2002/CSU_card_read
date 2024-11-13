@@ -1,127 +1,58 @@
-import base64
-import logging as log
+import re
 import os
-import platform
-import time
-
 import ddddocr
-from DrissionPage import ChromiumOptions, ChromiumPage
+import time
+from playwright.sync_api import Playwright, sync_playwright
 
-from utils import is_debug, pushplus
-
-log.basicConfig(level=log.DEBUG if os.getenv("debug") is not None else log.INFO)
-
-
-def code_input(driver: ChromiumPage):
-    """
-    Clears the input field for the captcha code on a webpage and fills it with the result of OCR on the captcha image.
-
-    :param driver: An instance of the ChromiumPage class from the DrissionPage library.
-    :type driver: ChromiumPage
-
-    :raises AssertionError: If the captcha image source is not found.
-
-    :return: None
-    :rtype: None
-    """
-    code_input = driver.ele("@placeholder=请输入验证码")
-    code_input.clear()
-    code_src = driver.ele(
-        locator=".van-image__img"
-        ).attr("src")
-    assert code_src, "未找到验证码"
-    code_src = code_src.removeprefix("data:image/png;base64,")
-    log.debug(f"{code_src=}")
-    code_src = base64.b64decode(code_src)
-    ocr_result = ddddocr.DdddOcr().classification(code_src)
-    log.info(f"验证码识别结果：{ocr_result}")
-    code_input.input(ocr_result)
+from utils import pushplus
 
 
-# 从环境变量读取账号密码
-COUNT = os.environ["COUNT"]
-PWD = os.environ["PWD"]
-PUSH_PLUS_TOKEN = os.environ.get("PUSH_PLUS_TOKEN")
-GITHUB_TRIGGERING_ACTOR = os.environ.get("GITHUB_TRIGGERING_ACTOR")
-log.debug(f"{COUNT=}, {PWD=}, {PUSH_PLUS_TOKEN=}, {GITHUB_TRIGGERING_ACTOR=}")
+
+# 使用playwright登录并获取数据,并推送消息
+def run(playwright: Playwright) -> None:
+    # 从环境变量读取账号密码
+    COUNT = os.environ["COUNT"]
+    PWD = os.environ["PWD"]
+    PUSH_PLUS_TOKEN = os.environ.get("PUSH_PLUS_TOKEN")
+    browser = playwright.chromium.launch(headless=True)
+    context = browser.new_context(user_agent="Mozilla/5.0 (iPhone; CPU iPhone OS 12_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/16A366 MicroMessenger/7.0.5(0x17000521) NetType/WIFI Language/zh_CN", viewport={"width":390,"height":844})
+    page = context.new_page()
+    page.goto("https://ecard.csu.edu.cn/plat/login?synAccessSource=h5&loginFrom=h5&type=login")
+    page.get_by_text("更多登录方式").click()
+    page.get_by_role("button", name="校园卡账号登录").click()
+    page.get_by_placeholder("请输入校园卡账号").fill(COUNT)
+    page.get_by_placeholder("请输入一卡通查询密码").fill(PWD)
+    # 保存验证码图片
+    page.locator('.van-image__img').screenshot(path="code.png")
+    # 使用ddddorc识别保存的图片
+    ocr = ddddocr.DdddOcr(show_ad=False)
+    with open("code.png", "rb") as f:
+        code = ocr.classification(f.read())
+    print(f'识别到的验证码：{code}')
+    # 输入验证码
+    page.get_by_placeholder("请输入验证码").fill(code)
+    page.get_by_role("button", name="登录").click()
+    page.locator("div:nth-child(7) > .van-grid-item__content > .van-grid-item__icon-wrapper > .grid-icon-box > .s-icon > .van-image__img").click()
+    time.sleep(1)
+    page.locator("div").filter(has_text=re.compile(r"^代充值图书馆缴费校园卡资金转银行宿舍缴电费校本部和铁道10\.11舍宿舍缴费$")).get_by_role("img").nth(4).click()
+    # 获取余额文本
+    time.sleep(1)
+    balance = page.locator('p.text-gary:has-text("剩余电量") span:nth-child(2)').inner_text()
+    # 从字符中保留数据部分
+    remain = balance.split(":")[-1].strip()
+    print(f"余额：{remain}")
+    cost = float(remain)
+    # 通过pushplus推送消息
+    pushplus(cost, COUNT, PUSH_PLUS_TOKEN)
+    
+    # ---------------------
+    context.close()
+    browser.close()
+
+with sync_playwright() as playwright:
+    run(playwright)
 
 
-# browser init
-if platform.system() == "Windows":
-    browser_path = r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
-else:
-    browser_path = r"/usr/bin/chromium-browser"
-assert os.path.exists(browser_path), "未找到 Chromium 浏览器"
-co = ChromiumOptions()
-co.set_browser_path(browser_path)
-
-# 添加微信浏览器的 User-Agent
-co.set_user_agent("Mozilla/5.0 (iPhone; CPU iPhone OS 12_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/16A366 MicroMessenger/7.0.5(0x17000521) NetType/WIFI Language/zh_CN")
-co.set_argument("--headless")
-co.set_argument("--no-sandbox")
-
-driver = ChromiumPage(co)
-driver.get("https://ecard.csu.edu.cn/plat/login?synAccessSource=h5&loginFrom=h5&type=login")
-driver.get_screenshot(name="1.png")
 
 
-# 尝试登录
-for _ in range(3):
-    time.sleep(2)
-    morelogin_button = driver.ele("@type=flex")
-    morelogin_button.click()
-    time.sleep(5)
-    cardlogin_button = driver.ele("@type=button", index=3)
-    cardlogin_button.click()
-    time.sleep(2)
-    if is_debug():
-        time.sleep(4)
-    count_input = driver.ele("@type=text")
-    count_input.clear()
-    time.sleep(2)
-    count_input.input(COUNT)
-    time.sleep(2)
-    pwd_input = driver.ele("@type=password")
-    pwd_input.clear()
-    time.sleep(2)
-    pwd_input.input(PWD)
-    time.sleep(2)
-    driver.get_screenshot(name="2.png")
-    code_input(driver)
-    time.sleep(2)
-    login_button = driver.ele("@type=button",index=-2)
-    driver.get_screenshot(name="3.png")
-    time.sleep(2)
-    login_button.click()
-    error_message = driver.ele("gagargaagga")
-    if not error_message:
-        log.info("登录成功")
-        driver.get_screenshot(name="4.png")
-        break
-else:
-    raise Exception("登录失败")
 
-# # 获取数据
-# time.sleep(5)
-# driver.get_screenshot(name="login.png")
-# all_body = driver.ele("@src=https://ecard.csu.edu.cn/minio/theme/76a207a88839430103a509aa3882bde4/images/plat/white/appView/all.png")
-# all_body.click()
-# time.sleep(5)
-# last_body = driver.ele("@src=https://ecard.csu.edu.cn/minio/theme/76a207a88839430103a509aa3882bde4/images/plat/white/appView/electricity.png")
-# last_body.click()
-# time.sleep(5)
-# # 查找class=text-gary的第二个元素提取为文本
-# remain_class = driver.ele("@class=text-gary", index=2).text
-# print(remain_class)
-# # 从"剩余电量: 55.073"字符中保留数字部分
-# remain = remain_class.split(":")[-1].strip()
-
-# try:
-#     cost = float(remain)
-# except ValueError:
-#     log.error(f"余额不是数字: {remain}")
-#     exit(1)
-
-# log.info(cost)
-# driver.quit()
-# pushplus(cost, COUNT, GITHUB_TRIGGERING_ACTOR, PUSH_PLUS_TOKEN)
