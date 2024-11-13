@@ -36,8 +36,7 @@ def add_data(cost):
     Path("data.js").write_text("data=" + origindata, encoding="utf-8")
     return data
 
-
-def pushplus(cost, COUNT, GITHUB_TRIGGERING_ACTOR, PUSH_PLUS_TOKEN):
+def pushplus(cost, COUNT, PUSH_PLUS_TOKEN):
     config = ConfigParser()
     config.read("config.ini", encoding="utf-8")
     tablehead = "|序号 | 时间 | 剩余电量|\n|:---:|:---:|:---:|\n"
@@ -51,35 +50,20 @@ def pushplus(cost, COUNT, GITHUB_TRIGGERING_ACTOR, PUSH_PLUS_TOKEN):
         text = f"""# <text style="color:red;">警告：剩余电量低于阈值 ({last_remain}度)</text>\n"""
     else:
         if config.getboolean("pushplus", "push_warning_only", fallback=False):
-            log.info("sufficient cost, ignoring pushing...")
-            # return
-        text = ""
+            return
+        text = ''
     index = 1
     for item in reversed(last_few_items):
         tablehead += f'| {index} | {item["datetime"]} | {item["val"]}度 |\n'
         index += 1
     text += f"## 当前余额：{cost}度\n个人信息：卡号{COUNT}\n\n统计时间：{stime}\n\n### 最近{days_to_show}天数据\n{tablehead}\n"
-    # if (
-    #     config.getboolean("pushplus", "detail", fallback=True)
-    #     and GITHUB_TRIGGERING_ACTOR
-    # ):
-    #     website = f"https://{GITHUB_TRIGGERING_ACTOR}.github.io/CSU_statistics"
-    #     text += f"[图表显示更多数据]({website})\n"
-    #     log.info("show more details")
     with suppress():
         sendMsgToWechat(PUSH_PLUS_TOKEN, f"{stime}CSU 剩余电量统计", text, "markdown")
         log.info("push plus executed successfully")
 
 
+
 def sendMsgToWechat(token: str, title: str, text: str, template: str) -> None:
-    """
-    token:PushPlus token
-    title:text's title
-    text:text's body
-    template:html,txt,json,markdown
-    Send message to Wechat(SMS,E-mail,Dingtalk...) via PushPlus.
-    default channel is wechat
-    """
     url = "http://www.pushplus.plus/send"
     data = {"token": token, "title": title, "content": text, "template": template}
     a = requests.post(
